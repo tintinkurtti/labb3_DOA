@@ -22,19 +22,48 @@ run create_run(int N, double time, double std_dev, int samples) {
     return r;
 }
 
+int number_of_primes(std::vector<bool> &primes){
+    int count = 0;
+    for (auto index : primes){
+        if (index){
+            count += 1;
+        }
+    }
+    return count;
+}
+
 std::vector<bool> create_primes(int N){
-    std::vector<bool> primes(N + 1, true);
+
+    std::vector<bool> primes(N * 2, true);
     primes[0] = false;
     primes[1] = false;
-    for (int i = 2; i * i <= N; i++) {
-        if (primes[i]) {
-            for (int j = i * i; j <= N; j += i) {
-                primes[j] = false;
-            }
+    int i = 2;
+    while(i < N/2){
+        int divisor = i * 2;
+        while(divisor <= N){
+            primes[divisor] = false;
+            divisor += i;
+        }
+        i += 1;
+        while(!primes[i]){
+            i += 1;
         }
     }
     return primes;
+}
 
+std::vector<int> create_prime_vec(int N) {
+    std::vector<bool> primes = create_primes(N);
+    std::vector<int> prime_vec;
+    if (number_of_primes(primes) < N) {
+        primes = create_primes(N * 2);
+    }
+    for(int i = 0; prime_vec.size() < N ; i++){
+        if (primes[i]){
+            prime_vec.push_back(i);
+        }
+    }
+    return prime_vec;
 }
 
 void write_to_file(std::vector<run> &results, std::string filename) {
@@ -71,24 +100,6 @@ double std_dev(std::vector<double> &times) {
     return std::sqrt(sum_square * (1.0 / (times.size() - 1)));
 }
 
-void generate_random(int N, std::vector<int> &vec) {
-    for (int i = 0; i < N; i++) {
-        vec.push_back(rand() % N);
-    }
-}
-
-void generate_rising(int N, std::vector<int> &vec) {
-    for (int i = 0; i < N; i++) {
-        vec.push_back(i);
-    }
-}
-
-void generate_falling(int N, std::vector<int> &vec) {
-    for (int i = N; i > 0; i--) {
-        vec.push_back(i);
-    }
-}
-
 void run_time(std::vector<int> &vec, void (*sort)(std::vector<int> &, int a, int b), int N, int samples, std::vector<run> &results) {
     double time = 0;
     double deviation = 0;
@@ -118,20 +129,11 @@ void run_time(std::vector<int> &vec, void (*sort)(std::vector<int> &, int a, int
 
 
 int main() {
-
     std::vector<run> results;
 
-    int N = 2000;
-    int samples = 5;
-    while(N <= 20000) {
-        std::vector<int> vec;
-        std::vector<int> const_vec(N, 10);
-        generate_rising(N, vec);
-        run_time(vec, quicksort_piv_right, N, samples, results);
-        N += 1000;
-    }
+    std::vector<int> vec = create_prime_vec(200000);
+
 
     write_to_file(results, "qsr_ris.txt");
-
     return 0;
 }
