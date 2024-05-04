@@ -131,7 +131,7 @@ void run_time(std::vector<int> &vec, void (*sort)(std::vector<int> &, int a, int
 int main() {
     std::vector<run> results;
 
-    std::vector<int> vec = create_prime_vec(200000);
+    std::vector<int> vec = create_prime_vec(100000);
 
 
     write_to_file(results, "qsr_ris.txt");
