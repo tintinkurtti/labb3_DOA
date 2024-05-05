@@ -133,7 +133,5 @@ int main() {
 
     std::vector<int> vec = create_prime_vec(100000);
 
-
-    write_to_file(results, "qsr_ris.txt");
     return 0;
 }
