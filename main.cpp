@@ -33,20 +33,20 @@ int number_of_primes(std::vector<bool> &primes){
 }
 
 std::vector<bool> create_primes(int N){
-
-    std::vector<bool> primes(N * 2, true);
+    int size = N * log(N) * 1.2;
+    std::vector<bool> primes(size, true);
     primes[0] = false;
     primes[1] = false;
     int i = 2;
-    while(i < N/2){
+    while(i < size/2){
         int divisor = i * 2;
-        while(divisor <= N){
+        while(divisor <= size){
             primes[divisor] = false;
             divisor += i;
         }
-        i += 1;
+        i++;
         while(!primes[i]){
-            i += 1;
+            i++;
         }
     }
     return primes;
@@ -55,9 +55,6 @@ std::vector<bool> create_primes(int N){
 std::vector<int> create_prime_vec(int N) {
     std::vector<bool> primes = create_primes(N);
     std::vector<int> prime_vec;
-    if (number_of_primes(primes) < N) {
-        primes = create_primes(N * 2);
-    }
     for(int i = 0; prime_vec.size() < N ; i++){
         if (primes[i]){
             prime_vec.push_back(i);
@@ -100,7 +97,7 @@ double std_dev(std::vector<double> &times) {
     return std::sqrt(sum_square * (1.0 / (times.size() - 1)));
 }
 
-void run_time(std::vector<int> &vec, void (*sort)(std::vector<int> &, int a, int b), int N, int samples, std::vector<run> &results) {
+void run_time(std::vector<int> &vec, bool (*search)(Node* root, int a), int N, int samples, std::vector<run> &results) {
     double time = 0;
     double deviation = 0;
     std::vector<double> times;
@@ -108,10 +105,11 @@ void run_time(std::vector<int> &vec, void (*sort)(std::vector<int> &, int a, int
         // Copy the vector
         std::vector<int> copy = vec;
         // Start the timer
+        // Create the binary tree
+        Node* root = create_binary_tree(copy, 0, copy.size() - 1);
         auto start = std::chrono::high_resolution_clock::now();
-        //sort(copy);
-        //std::sort(copy.begin(), copy.end());
-        sort(copy, 0, N - 1);
+
+
         auto end = std::chrono::high_resolution_clock::now();
         // Calculate the duration
         auto duration = std::chrono::duration_cast<std::chrono::duration<double>>(end - start);
@@ -131,7 +129,13 @@ void run_time(std::vector<int> &vec, void (*sort)(std::vector<int> &, int a, int
 int main() {
     std::vector<run> results;
 
-    std::vector<int> vec = create_prime_vec(100000);
+    std::vector<int> primes = create_prime_vec(100);
+
+    Node *rootPointer = nullptr;
+    rootPointer= create_binary_tree(primes, 0, primes.size() - 1);
+    printBinaryTree(rootPointer, "");
+
+
 
     return 0;
 }

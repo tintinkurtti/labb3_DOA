@@ -5,7 +5,8 @@
 #ifndef LABORATION_3_SEARCH_H
 #define LABORATION_3_SEARCH_H
 
-
+#include <vector>
+#include <iostream>
 
 struct Node{
     int data;
@@ -20,12 +21,15 @@ struct HashNode{
 
 bool linear_search(std::vector<int> &, int);
 
-bool binary_search(std::vector<int> &, int);
+bool binary_search(Node* , int);
+
+void printBinaryTree(Node*, std::string);
+
+Node* create_binary_tree(std::vector<int> &, int, int);
 
 bool binary_tree_search(Node*, const int&);
 
 bool hash_table_search(std::vector<Node*>::iterator, std::vector<Node*>::iterator, const int&);
-
 
 
 #endif //LABORATION_3_SEARCH_H
