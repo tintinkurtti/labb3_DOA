@@ -51,7 +51,7 @@ bool binary_search(std::vector<int> &vec, int value){
     return false;
 }
 
-bool binary_tree_search(Node* root, const int& value){
+bool binary_tree_search(Node* root, int value){
     if (root == nullptr || root->data == value){
         return true;
     }
@@ -59,15 +59,6 @@ bool binary_tree_search(Node* root, const int& value){
         return binary_tree_search(root->right, value);
     }
     return binary_tree_search(root->left, value);
-}
-
-void printBinaryTree(Node* root, std::string indent) {
-    if(root != nullptr) {
-        std::cout << indent << root->data << "\n";
-        indent += "  ";
-        printBinaryTree(root->left, indent);
-        printBinaryTree(root->right, indent);
-    }
 }
 
 bool hash_table_search(std::vector<HashNode*>::iterator begin, std::vector<HashNode*>::iterator end, const int& value){

@@ -5,6 +5,7 @@
 #include <fstream>
 #include <valarray>
 #include <numeric>
+#include <time.h>
 
 struct run {
     int N;
@@ -97,19 +98,23 @@ double std_dev(std::vector<double> &times) {
     return std::sqrt(sum_square * (1.0 / (times.size() - 1)));
 }
 
-void run_time(std::vector<int> &vec, bool (*search)(Node* root, int a), int N, int samples, std::vector<run> &results) {
+void run_time(std::vector<int> &vec, bool(*search)(Node* root, int a), int N, int samples, std::vector<run> &results) {
     double time = 0;
     double deviation = 0;
     std::vector<double> times;
+    // Create the binary tree
+    Node* root = create_binary_tree(vec, 0, vec.size() - 1);
+
     for (int i = 0; i < samples; i++) {
-        // Copy the vector
-        std::vector<int> copy = vec;
+        int search_val = rand() % N - 1;
+        search_val = vec[search_val];
         // Start the timer
-        // Create the binary tree
-        Node* root = create_binary_tree(copy, 0, copy.size() - 1);
         auto start = std::chrono::high_resolution_clock::now();
-
-
+        bool found = search(root, search_val);
+        if (!found){
+            std::cerr << "Value not found" << std::endl;
+            break;
+        }
         auto end = std::chrono::high_resolution_clock::now();
         // Calculate the duration
         auto duration = std::chrono::duration_cast<std::chrono::duration<double>>(end - start);
@@ -129,11 +134,19 @@ void run_time(std::vector<int> &vec, bool (*search)(Node* root, int a), int N, i
 int main() {
     std::vector<run> results;
 
-    std::vector<int> primes = create_prime_vec(100);
+    int N = 100000;
+    int samples = 20;
+    while(N <= 1000000) {
+        std::vector<int> primes = create_prime_vec(N);
+        run_time(primes, binary_tree_search, N, samples, results);
+        N += 10000;
+    }
+    write_to_file(results, "binary_tree_search.txt");
 
-    Node *rootPointer = nullptr;
-    rootPointer= create_binary_tree(primes, 0, primes.size() - 1);
-    printBinaryTree(rootPointer, "");
+
+
+
+
 
 
 
