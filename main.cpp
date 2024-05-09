@@ -98,29 +98,40 @@ double std_dev(std::vector<double> &times) {
     return std::sqrt(sum_square * (1.0 / (times.size() - 1)));
 }
 
-void run_time(std::vector<int> &vec, bool(*search)(Node* root, int a), int N, int samples, std::vector<run> &results) {
+void run_time(std::vector<int> &vec, bool(*search)(std::vector<HashNode*>::iterator begin, std::vector<HashNode*>::iterator end, int value), int N, int samples, std::vector<run> &results) {
     double time = 0;
     double deviation = 0;
     std::vector<double> times;
     // Create the binary tree
-    Node* root = create_binary_tree(vec, 0, vec.size() - 1);
+    //Node* root = create_binary_tree(vec, 0, vec.size() - 1);
+    //Create hashtable
+    std::vector<HashNode*> hash_table = create_hash_table(vec);
 
     for (int i = 0; i < samples; i++) {
         int search_val = rand() % N - 1;
         search_val = vec[search_val];
         // Start the timer
         auto start = std::chrono::high_resolution_clock::now();
-        bool found = search(root, search_val);
-        if (!found){
-            std::cerr << "Value not found" << std::endl;
-            break;
+        double time_elapsed = 0;
+        int number_of_searches = 0;
+        while(time_elapsed < 0.1) {
+            bool found = search(hash_table.begin(), hash_table.end(), search_val);
+            // bool found = search(vec, search_val);
+            number_of_searches++;
+            if (!found) {
+                std::cerr << "Value not found" << std::endl;
+                break;
+            }
+            auto time_now = std::chrono::high_resolution_clock::now();
+            time_elapsed = std::chrono::duration_cast<std::chrono::duration<double>>(time_now - start).count();
         }
         auto end = std::chrono::high_resolution_clock::now();
         // Calculate the duration
-        auto duration = std::chrono::duration_cast<std::chrono::duration<double>>(end - start);
+        auto duration = std::chrono::duration_cast<std::chrono::duration<double>>(end - start).count();
+        duration = duration / number_of_searches;
         // Add the duration to the total time
-        time += duration.count();
-        times.push_back(duration.count());
+        time += duration;
+        times.push_back(duration);
     }
     // Calculate the average time
     time /= samples;
@@ -134,14 +145,14 @@ void run_time(std::vector<int> &vec, bool(*search)(Node* root, int a), int N, in
 int main() {
     std::vector<run> results;
 
-    int N = 100000;
+    int N = 20000;
     int samples = 20;
-    while(N <= 1000000) {
+    while(N <= 200000) {
         std::vector<int> primes = create_prime_vec(N);
-        run_time(primes, binary_tree_search, N, samples, results);
-        N += 10000;
+        run_time(primes, hash_table_search, N, samples, results);
+        N += 20000;
     }
-    write_to_file(results, "binary_tree_search.txt");
+    write_to_file(results, "hash_search.txt");
 
 
 

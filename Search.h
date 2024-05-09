@@ -21,13 +21,18 @@ struct HashNode{
 
 bool linear_search(std::vector<int> &, int);
 
-bool binary_search(Node* , int);
+bool binary_search(std::vector<int> &, int);
 
 Node* create_binary_tree(std::vector<int> &, int, int);
 
 bool binary_tree_search(Node*, int);
 
-bool hash_table_search(std::vector<Node*>::iterator, std::vector<Node*>::iterator, const int&);
+bool hash_table_search(std::vector<HashNode*>::iterator, std::vector<HashNode*>::iterator, int);
+
+void insert_hash_node(std::vector<HashNode*>::iterator, std::vector<HashNode*>::iterator, int);
+
+std::vector<HashNode*> create_hash_table(std::vector<int> &);
+
 
 
 #endif //LABORATION_3_SEARCH_H
