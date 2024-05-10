@@ -106,14 +106,17 @@ void run_time(std::vector<int> &vec, bool(*search)(std::vector<HashNode*>::itera
     //Node* root = create_binary_tree(vec, 0, vec.size() - 1);
     //Create hashtable
     std::vector<HashNode*> hash_table = create_hash_table(vec);
+    //int depth = calculate_hash_depth(hash_table.begin(), hash_table.end());
+    //std::cout << "Depth: " << depth << std::endl;
 
     for (int i = 0; i < samples; i++) {
         int search_val = rand() % N - 1;
         search_val = vec[search_val];
         // Start the timer
-        auto start = std::chrono::high_resolution_clock::now();
+
         double time_elapsed = 0;
         int number_of_searches = 0;
+        auto start = std::chrono::high_resolution_clock::now();
         while(time_elapsed < 0.1) {
             bool found = search(hash_table.begin(), hash_table.end(), search_val);
             // bool found = search(vec, search_val);

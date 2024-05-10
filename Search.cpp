@@ -95,9 +95,25 @@ void insert_hash_node(std::vector<HashNode*>::iterator begin, std::vector<HashNo
 }
 
 std::vector<HashNode*> create_hash_table(std::vector<int>& vec){
-    std::vector<HashNode*> hash_table(vec.size() / 2, nullptr);
+    std::vector<HashNode*> hash_table(vec.size() * 4, nullptr);
     for (int i = 0; i < vec.size(); i++){
         insert_hash_node(hash_table.begin(), hash_table.end(), vec[i]);
     }
     return hash_table;
+}
+
+int calculate_hash_depth(std::vector<HashNode*>::iterator begin, std::vector<HashNode*>::iterator end){
+    int max_depth = 0;
+    for (auto it = begin; it != end; it++){
+        int depth = 0;
+        HashNode* current = *it;
+        while (current != nullptr){
+            depth++;
+            current = current->next;
+        }
+        if (depth > max_depth){
+            max_depth = depth;
+        }
+    }
+    return max_depth;
 }
