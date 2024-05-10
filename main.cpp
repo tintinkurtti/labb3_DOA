@@ -103,7 +103,7 @@ void run_time(std::vector<int> &vec, bool(*search)(std::vector<HashNode*>::itera
     double deviation = 0;
     std::vector<double> times;
     // Create the binary tree
-    //Node* root = create_binary_tree(vec, 0, vec.size() - 1);
+    //Node* root = create_binary_tree(vec, 0, vec.size());
     //Create hashtable
     std::vector<HashNode*> hash_table = create_hash_table(vec);
     //int depth = calculate_hash_depth(hash_table.begin(), hash_table.end());
@@ -112,14 +112,15 @@ void run_time(std::vector<int> &vec, bool(*search)(std::vector<HashNode*>::itera
     for (int i = 0; i < samples; i++) {
         int search_val = rand() % N - 1;
         search_val = vec[search_val];
-        // Start the timer
 
         double time_elapsed = 0;
         int number_of_searches = 0;
+        // Start the timer
         auto start = std::chrono::high_resolution_clock::now();
         while(time_elapsed < 0.1) {
+            //bool found = search(root, search_val);
             bool found = search(hash_table.begin(), hash_table.end(), search_val);
-            // bool found = search(vec, search_val);
+            //bool found = search(vec, search_val);
             number_of_searches++;
             if (!found) {
                 std::cerr << "Value not found" << std::endl;
@@ -134,10 +135,11 @@ void run_time(std::vector<int> &vec, bool(*search)(std::vector<HashNode*>::itera
         duration = duration / number_of_searches;
         // Add the duration to the total time
         time += duration;
-        times.push_back(duration);
+        times.push_back(duration * 1000);
     }
     // Calculate the average time
     time /= samples;
+    time = time * 1000;
     // Calculate the standard deviation
     deviation = std_dev(times);
     // Create a run and add it to the results
@@ -147,6 +149,7 @@ void run_time(std::vector<int> &vec, bool(*search)(std::vector<HashNode*>::itera
 
 int main() {
     std::vector<run> results;
+    srand(time(NULL));
 
     int N = 20000;
     int samples = 20;
@@ -156,13 +159,5 @@ int main() {
         N += 20000;
     }
     write_to_file(results, "hash_search.txt");
-
-
-
-
-
-
-
-
     return 0;
 }
