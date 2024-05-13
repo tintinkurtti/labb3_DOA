@@ -6,6 +6,7 @@
 #include <valarray>
 #include <numeric>
 #include <time.h>
+#include <random>
 
 struct run {
     int N;
@@ -102,16 +103,22 @@ void run_time(std::vector<int> &vec, bool(*search)(std::vector<HashNode*>::itera
     double time = 0;
     double deviation = 0;
     std::vector<double> times;
+    std::vector<int> copy_vec = vec;
     // Create the binary tree
-    //Node* root = create_binary_tree(vec, 0, vec.size());
+    Node* root = create_binary_tree(copy_vec, 0, copy_vec.size());
     //Create hashtable
     std::vector<HashNode*> hash_table = create_hash_table(vec);
     //int depth = calculate_hash_depth(hash_table.begin(), hash_table.end());
     //std::cout << "Depth: " << depth << std::endl;
 
     for (int i = 0; i < samples; i++) {
-        int search_val = rand() % N - 1;
-        search_val = vec[search_val];
+        std::default_random_engine generator;
+        std::uniform_int_distribution<int> distribution(0,copy_vec.size() - 1);
+
+        // Generera ett slumptal
+        int search_val = distribution(generator);
+
+        search_val = copy_vec[search_val];
 
         double time_elapsed = 0;
         int number_of_searches = 0;
@@ -120,10 +127,10 @@ void run_time(std::vector<int> &vec, bool(*search)(std::vector<HashNode*>::itera
         while(time_elapsed < 0.1) {
             //bool found = search(root, search_val);
             bool found = search(hash_table.begin(), hash_table.end(), search_val);
-            //bool found = search(vec, search_val);
+            //bool found = search(copy_vec, search_val);
             number_of_searches++;
             if (!found) {
-                std::cerr << "Value not found" << std::endl;
+                std::cerr << search_val << "Value not found" << std::endl;
                 break;
             }
             auto time_now = std::chrono::high_resolution_clock::now();
@@ -149,15 +156,14 @@ void run_time(std::vector<int> &vec, bool(*search)(std::vector<HashNode*>::itera
 
 int main() {
     std::vector<run> results;
-    srand(time(NULL));
 
     int N = 20000;
-    int samples = 20;
+    int samples = 100;
     while(N <= 200000) {
         std::vector<int> primes = create_prime_vec(N);
         run_time(primes, hash_table_search, N, samples, results);
         N += 20000;
     }
-    write_to_file(results, "hash_search.txt");
+    write_to_file(results, "hash_tree_search.txt");
     return 0;
 }
