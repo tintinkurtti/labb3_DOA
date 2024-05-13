@@ -9,7 +9,7 @@
 bool linear_search(std::vector<int> &vec, int value){
     for (int i = 0; i < vec.size(); i++){
         if (vec[i] == value){
-            return i;
+            return true;
         }
     }
     return false;
@@ -39,9 +39,9 @@ bool binary_search(std::vector<int> &vec, int value){
     while (low <= high){
         int mid = (low + high) / 2;
         if (vec[mid] == value){
-            return mid;
+            return true;
         }
-        else if (vec[mid] < value){
+        else if (vec[mid] <= value){
             low = mid + 1;
         }
         else{
