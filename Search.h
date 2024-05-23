@@ -19,7 +19,7 @@ struct HashNode{
     HashNode* next;
 };
 
-bool linear_search(std::vector<int> &, int);
+bool linear_search(std::vector<int>&, int);
 
 bool binary_search(std::vector<int> &, int);
 
@@ -34,6 +34,8 @@ void insert_hash_node(std::vector<HashNode*>::iterator, std::vector<HashNode*>::
 std::vector<HashNode*> create_hash_table(std::vector<int> &);
 
 int calculate_hash_depth(std::vector<HashNode*>::iterator begin, std::vector<HashNode*>::iterator end);
+
+int calculate_hash_load(std::vector<HashNode*>::iterator begin, std::vector<HashNode*>::iterator end);
 
 
 

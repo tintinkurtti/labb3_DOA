@@ -6,7 +6,7 @@
 #include "Search.h"
 
 
-bool linear_search(std::vector<int> &vec, int value){
+bool linear_search(std::vector<int>& vec, int value){
     for (int i = 0; i < vec.size(); i++){
         if (vec[i] == value){
             return true;
@@ -81,7 +81,7 @@ HashNode* create_new_hash_node(int value) {
 
 void insert_hash_node(std::vector<HashNode*>::iterator begin, std::vector<HashNode*>::iterator end, int value){
     HashNode* new_node = create_new_hash_node(value);
-    HashNode*& node_index = *(begin + (value % std::distance(begin, end))); // Referens till pekare
+    HashNode*& node_index = *(begin + (value % std::distance(begin, end)));
     if (node_index == nullptr){
         node_index = new_node;
     }
@@ -95,7 +95,7 @@ void insert_hash_node(std::vector<HashNode*>::iterator begin, std::vector<HashNo
 }
 
 std::vector<HashNode*> create_hash_table(std::vector<int>& vec){
-    std::vector<HashNode*> hash_table(vec.size() * 4, nullptr);
+    std::vector<HashNode*> hash_table(vec.size() * 1.5, nullptr);
     for (int i = 0; i < vec.size(); i++){
         insert_hash_node(hash_table.begin(), hash_table.end(), vec[i]);
     }
@@ -116,4 +116,17 @@ int calculate_hash_depth(std::vector<HashNode*>::iterator begin, std::vector<Has
         }
     }
     return max_depth;
+}
+int calculate_hash_load(std::vector<HashNode*>::iterator begin, std::vector<HashNode*>::iterator end){
+    int dist = std::distance(begin, end);
+    int load = 0;
+    for (auto it = begin; it != end; it++){
+        HashNode* current = *it;
+        if (current != nullptr){
+            load++;
+        }
+    }
+    load = (load * 100) / dist;
+
+    return load;
 }

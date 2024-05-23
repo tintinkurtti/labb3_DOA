@@ -73,7 +73,7 @@ void write_to_file(std::vector<run> &results, std::string filename) {
         std::cerr << "Could not open file" << std::endl;
         return;
     }
-
+    file << "N      Time       Std_dev      Samples" << std::endl;
     for (auto &run : results) {
         file << run.N << "  " << run.time << "  " << run.std_dev << " " << run.samples << std::endl;
     }
@@ -99,40 +99,32 @@ double std_dev(std::vector<double> &times) {
     return std::sqrt(sum_square * (1.0 / (times.size() - 1)));
 }
 
-void run_time(std::vector<int> &vec, bool(*search)(std::vector<int>&, int value), int N, int samples, std::vector<run> &results) {
-    double time = 0;
-    double deviation = 0;
+std::vector<double> cleaned_data(std::vector<double> &vec) {
+    std::sort(vec.begin(), vec.end());
+    vec.erase(vec.begin(), vec.begin() + 30);
+    return vec;
+}
+
+void run_time(std::vector<int> &vec, bool(*search)(std::vector<int> &vector, int value), int N, int samples, std::vector<run> &results) {
     std::vector<double> times;
-    std::vector<int> copy_vec = vec;
+    bool searched;
     // Create the binary tree
-    Node* root = create_binary_tree(copy_vec, 0, copy_vec.size());
+    //Node* root = create_binary_tree(vec, 0, vec.size());
     //Create hashtable
-    std::vector<HashNode*> hash_table = create_hash_table(vec);
+    //std::vector<HashNode*> hash_table = create_hash_table(vec);
     //int depth = calculate_hash_depth(hash_table.begin(), hash_table.end());
-    //std::cout << "Depth: " << depth << std::endl;
+    //int load = calculate_hash_load(hash_table.begin(), hash_table.end());
+    //std::cout << "Depth: " << depth << " Load: " << load << std::endl;
 
     for (int i = 0; i < samples; i++) {
-        std::default_random_engine generator;
-        std::uniform_int_distribution<int> distribution(0,copy_vec.size() - 1);
-
-        // Generera ett slumptal
-        int search_val = distribution(generator);
-
-        search_val = copy_vec[search_val];
-
         double time_elapsed = 0;
         int number_of_searches = 0;
+        int search_val = rand() % vec.size();
         // Start the timer
         auto start = std::chrono::high_resolution_clock::now();
         while(time_elapsed < 0.1) {
-            //bool found = search(root, search_val);
-            //bool found = search(hash_table.begin(), hash_table.end(), search_val);
-            bool found = search(copy_vec, search_val);
             number_of_searches++;
-            if (!found) {
-                std::cerr << search_val << "Value not found" << std::endl;
-                break;
-            }
+            searched = search(vec, search_val);
             auto time_now = std::chrono::high_resolution_clock::now();
             time_elapsed = std::chrono::duration_cast<std::chrono::duration<double>>(time_now - start).count();
         }
@@ -141,28 +133,29 @@ void run_time(std::vector<int> &vec, bool(*search)(std::vector<int>&, int value)
         auto duration = std::chrono::duration_cast<std::chrono::duration<double>>(end - start).count();
         duration = duration / number_of_searches;
         // Add the duration to the total time
-        time += duration;
         times.push_back(duration * 1000);
     }
+    //std::vector<double> cleaned = cleaned_data(times);
     // Calculate the average time
-    time /= samples;
-    time = time * 1000;
+    double mean_time = std::accumulate(times.begin(), times.end(), 0.0) / times.size();
     // Calculate the standard deviation
-    deviation = std_dev(times);
+    double deviation = std_dev(times);
     // Create a run and add it to the results
-    results.push_back(create_run(N, time, deviation, samples));
+    results.push_back(create_run(N, mean_time, deviation, samples));
 }
 
 
 int main() {
+
+    srand(time(NULL));
     std::vector<run> results;
 
-    int N = 20000;
+    int N = 10000;
     int samples = 100;
-    while(N <= 200000) {
+    while(N <= 100000) {
         std::vector<int> primes = create_prime_vec(N);
         run_time(primes, linear_search, N, samples, results);
-        N += 20000;
+        N += 10000;
     }
     write_to_file(results, "linear_search.txt");
     return 0;
